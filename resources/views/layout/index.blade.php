@@ -4,7 +4,7 @@
         <meta charset="utf-8"/>
         <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
         <title>
-            {{Config('myConfig.project_name')}} @if(!empty($title)) | {{$title}} @endif
+        {{Config('myConfig.project_name')}} @if(!empty($title)) | {{$title}} @endif
         </title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
         <meta content="{{ csrf_token() }}" name="_token"/>
@@ -39,15 +39,15 @@
                                 </p>
                             </div>
                             @include('layout.common.alert')
-                        @show
-                        @yield('content')
+                            @show
+                            @yield('content')
                         </div>
                     </div>
                 </section>
             </div>
         </div>
         <script>
-            var public_path = "{!! URL::to('/'); !!}/";
+        var public_path = "{!! URL::to('/'); !!}/";
         </script>
         {{ Html::script("public/assets/plugins/jQuery/jquery-3.3.1.min.js") }}
         {{ Html::script("public/assets/bootstrap/js/bootstrap.min.js")}}
