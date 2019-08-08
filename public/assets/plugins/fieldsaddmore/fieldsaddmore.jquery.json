@@ -1,0 +1,34 @@
+{
+    "name": "fieldsaddmore",
+    "title": "Fields Addmore",
+    "description": "HTML form elements addmore",
+    "keywords": [
+        "addmore",
+        "jquery",
+        "fields",
+        "multiple",
+        "form"
+    ],
+    "version": "1.0",
+    "author": {
+        "name": "I Stone",
+        "email": "dinesh.rabara@gmail.com",
+        "url": "https://github.com/i-stone/fieldsaddmore"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/mit-license.php"
+        }
+    ],
+    "dependencies": {
+        "jquery": ">=1.11"
+    },
+    "homepage": "https://github.com/i-stone/fieldsaddmore",
+    "bugs": "https://github.com/i-stone/fieldsaddmore/issues",
+    "docs": "https://github.com/i-stone/fieldsaddmore",
+    "demo": "https://github.com/i-stone/fieldsaddmore/tree/master/example",
+    "files": [
+        "jqery.fieldsaddmore.js"
+    ]
+}
