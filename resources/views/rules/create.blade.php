@@ -14,7 +14,7 @@
 	</div>
 	<div class="box-footer">
 		<div class="form-group">
-			<div class="col-sm-offset-10">
+			<div class="col-sm-offset-8">
 				<button type="submit" class="btn btn-success btnRuleSave"> <i class="fa fa-optin-monster" aria-hidden="true"></i> Save</button>
 			</div>
 		</div>
