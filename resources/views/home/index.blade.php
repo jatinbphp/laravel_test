@@ -11,15 +11,15 @@
     <h3 class="box-title">Welcome To LaravelTest</h3>
   </div>
   <div class="box-body home">
-  	<div class="col-lg-5 col-xs-6">
+  	<div class="col-lg-4 col-xs-5">
   		@include("rules.create")
   	</div>
-  	<div class="col-lg-7 col-xs-6 ruleList">
+  	<div class="col-lg-7 col-xs-5 ruleList">
 		  @include("rules.index")
   	</div>
   </div>
   <div class="box-body home">
-    <div class="col-lg-5 col-xs-6">
+    <div class="col-lg-4 col-xs-6">
       @include("category.create")
     </div>
     <div class="col-lg-7 col-xs-6 categoryRuleList">
