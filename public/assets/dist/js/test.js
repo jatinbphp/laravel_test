@@ -669,7 +669,8 @@ jQuery(document).ready(function() {
      */
     jQuery(document).on('change',"#typesCategoryRulesId", function() {
         var typesCategoryRulesId = jQuery(this).val();
-        if (typeId != "") {
+        var rulesId = jQuery(".ruleUpdateId").val();
+        if (typeId != "" && rulesId =="") {
             jQuery(".typeCategoryRulesSave").removeClass("hide");
         } else {
             jQuery(".typeCategoryRulesSave").addClass("hide");
@@ -1024,12 +1025,15 @@ jQuery(document).ready(function() {
                 success: function(respObj) {
                     jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                     if (respObj.success) {
-                        jQuery("#ruleUpdateId").val(respObj.types_category.id);
-                        jQuery("#countryId").val(respObj.types_category.country_id);
-                        jQuery("#typeId").val(respObj.types_category.type_id);
-                        jQuery("#typeCategoryId").val(respObj.types_category.type_category_id);
-                        jQuery("#typesCategoryRulesId").val(respObj.types_category.rules_id);
+                        jQuery(".ruleUpdateId").val(respObj.rules.id);
+                        jQuery("#countryId").val(respObj.rules.country_id).trigger("change");
+                        jQuery("#typeId").val(respObj.rules.type_id).trigger("change");
+                        jQuery("#typeCategoryId").val(respObj.rules.type_category_id).trigger("change");
+                        jQuery("#typesCategoryRulesId").val(respObj.rules.rules_id);
+                        jQuery("typeId").val(respObj.rules.type_id);
+                        jQuery("typesCategoryRulesId").val(respObj.rules.type_category_id);
                         jQuery(".typeCategoryRulesUpdate").removeClass("hide");
+                        jQuery(".typeCategoryRulesSave").addClass("hide");
                     }
                 },
             });
@@ -1052,7 +1056,7 @@ jQuery(document).ready(function() {
         var ruleUpdateId = jQuery(".ruleUpdateId").val();
         
         jQuery.ajax({
-            url: public_path +"types_category_rules/update"+ruleUpdateId,
+            url: public_path +"types_category_rules/update/"+ruleUpdateId,
             type: 'post',
             dataType: 'json',
             data: {
@@ -1081,7 +1085,7 @@ jQuery(document).ready(function() {
                 if (respObj.success) {
                     jQuery(".rulesListHtml").html("");
                     jQuery(".typeCategoryRulesUpdate").addClass("hide");
-                    jQuery(".categoryRuleList").html(respObj.html);
+                    jQuery(".categoryRuleHtmlList").html(respObj.html);
                     jQuery("#typesCategoryId").trigger("change");
                 }
             },

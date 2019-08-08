@@ -61,7 +61,7 @@ class HomeController extends Controller
                 $rulesData[$key]['id'] = $typeRule['id'];
                 $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
                 $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
-                $rulesData[$key]['type_category_name'] = isset($typeList[$typeRule['type_category_id']]) ? $typeList[$typeRule['type_category_id']] : "";
+                $rulesData[$key]['type_category_name'] = isset($typeCategoryList[$typeRule['type_category_id']]) ? $typeCategoryList[$typeRule['type_category_id']] : "";
                 $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
             }
         }

@@ -491,9 +491,25 @@ class RulesController extends Controller
             "updated_at" => \Carbon\Carbon::now(),
         ]);
 
+        if (TypesCategoryRules::count() > 0) {
+            $countryList = Country::pluck("name", "id")->all();
+            $typeList = Types::pluck("name", "id")->all();
+            $typeCategoryList = TypesCategory::pluck("name", "id")->all();
+            $rulesList = Rules::pluck("name", "id")->all();
+
+            $typeRules = TypesCategoryRules::all()->toArray();
+            foreach ($typeRules as $key => $typeRule) {
+                $rulesData[$key]['id'] = $typeRule['id'];
+                $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
+                $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
+                $rulesData[$key]['type_category_name'] = isset($typeList[$typeRule['type_category_id']]) ? $typeList[$typeRule['type_category_id']] : "";
+                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
+            }
+        }
+
         $response = [
             'success' => true,
-            'types_category_rules' => $this->getCurrentCategoryRules(),
+            'types_category_rules' => view('category.category_rule_list', compact('rulesData'))->render(),
         ];
 
         return response()->json($response, 200);
@@ -558,21 +574,28 @@ class RulesController extends Controller
     {
         $categoryRules = [];
 
-        $typeRules = TypesCategoryRules::all();
-        if (count($typeRules) > 0) {
-            $rec = 0;
-            foreach ($typeRules as $key => $typeRule) {
-                $categoryRules[$rec]['id'] = $typeRule->id;
-                $categoryRules[$rec]['country_id'] = $typeRule->country_id;
-                $categoryRules[$rec]['type_id'] = $typeRule->type_id;
-                $categoryRules[$rec]['type_category_id'] = $typeRule->type_category_id;
-                $categoryRules[$rec]['rules_id'] = $typeRule->rules_id;
-                $rec++;
-            }
+        if (TypesCategoryRules::count() > 0) {
+            $countryList = Country::pluck("name", "id")->all();
+            $typeList = Types::pluck("name", "id")->all();
+            $typeCategoryList = TypesCategory::pluck("name", "id")->all();
+            $rulesList = Rules::pluck("name", "id")->all();
 
+            $typeRules = TypesCategoryRules::all()->toArray();
+            foreach ($typeRules as $key => $typeRule) {
+                $rulesData[$key]['id'] = $typeRule['id'];
+                $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
+                $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
+                $rulesData[$key]['type_category_name'] = isset($typeCategoryList[$typeRule['type_category_id']]) ? $typeCategoryList[$typeRule['type_category_id']] : "";
+                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
+            }
         }
 
-        return view('category.index', compact('categoryRules'))->render();
+        $response = [
+            'success' => true,
+            'html' => view('category.category_rule_list', compact('rulesData'))->render(),
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -678,23 +701,6 @@ class RulesController extends Controller
     }
 
     /**
-     * [getTypesCategoryRules description]
-     * @param  Request $request            [description]
-     * @param  [type]  $typeCategoryRuleId [description]
-     * @return [type]                      [description]
-     */
-    public function getTypesCategoryRules(Request $request, $typeCategoryRuleId)
-    {
-        $rules = TypesCategoryRules::where('id', $typeCategoryRuleId)->first();
-        $response = [
-            'success' => true,
-            'types_category' => $rules,
-        ];
-
-        return response()->json($response, 200);
-    }
-
-    /**
      * [updateTypesCategoryRules description]
      * @param  Request $request [description]
      * @return [type]           [description]
@@ -706,12 +712,12 @@ class RulesController extends Controller
         $rules = [
             'country_id' => "required",
             'type_id' => "required",
-            'type_category_name' => "required",
+            'type_category_id' => "required",
             'rules_id' => "required",
         ];
 
         $message = [
-            'type_category_name.unique' => 'The types category name must be unique',
+            'type_category_id.unique' => 'The types category name must be unique',
         ];
 
         $validator = Validator::make($data, $rules, $message);
