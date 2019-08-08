@@ -990,6 +990,104 @@ jQuery(document).ready(function() {
         }
         return false;
     });
+
+    /**
+     * [description]
+     * @param  {[type]} ) {               } [description]
+     * @return {[type]}   [description]
+     */
+    jQuery(document).on("click", ".btnCategoryRuleEdit", function(e) {
+        var typeId = jQuery(this).data("id");
+        if (typeId != "") {
+            jQuery.ajax({
+                url: public_path +"types_category_rules/get/"+typeId,
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    "type_id":typeId,
+                },
+                beforeSend: function() {
+                    myShow();
+                },
+                complete: function() {
+                    myHide();
+                },
+                error: function(respObj) {
+                    jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
+                    if (respObj.status == 400) {
+                        jQuery.each(respObj.responseJSON.errors, function(k, v) {
+                            jQuery('.box-body #' + k + '_error').text("");
+                            jQuery('.box-body #' + k + '_error').text(v);
+                        });
+                    }
+                },
+                success: function(respObj) {
+                    jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
+                    if (respObj.success) {
+                        jQuery("#ruleUpdateId").val(respObj.types_category.id);
+                        jQuery("#countryId").val(respObj.types_category.country_id);
+                        jQuery("#typeId").val(respObj.types_category.type_id);
+                        jQuery("#typeCategoryId").val(respObj.types_category.type_category_id);
+                        jQuery("#typesCategoryRulesId").val(respObj.types_category.rules_id);
+                        jQuery(".typeCategoryRulesUpdate").removeClass("hide");
+                    }
+                },
+            });
+            jQuery(".typeCategorySave,.typeCategoryUpdate,.typeCategoryDelete").addClass("hide");
+            jQuery(".typeCategoryDelete").removeClass("hide");
+        }
+        return false;
+    });
+
+    /**
+     * [description]
+     * @param  {[type]} ) {               } [description]
+     * @return {[type]}   [description]
+     */
+    jQuery(document).on("click", ".btnTypeCategoryRulesUpdate", function(e) {
+        var countryId = jQuery("#countryId").val();
+        var typeId = jQuery("#typeId").val();
+        var typeCategoryId = jQuery("#typesCategoryId").val();
+        var typeCategoryRulesId = jQuery("#typesCategoryRulesId").val();
+        var ruleUpdateId = jQuery(".ruleUpdateId").val();
+        
+        jQuery.ajax({
+            url: public_path +"types_category_rules/update"+ruleUpdateId,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                "country_id":countryId,
+                "type_id":typeId,
+                "type_category_id":typeCategoryId,
+                "rules_id":typeCategoryRulesId,
+            },
+            beforeSend: function() {
+                myShow();
+            },
+            complete: function() {
+                myHide();
+            },
+            error: function(respObj) {
+                jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
+                if (respObj.status == 400) {
+                    jQuery.each(respObj.responseJSON.errors, function(k, v) {
+                        jQuery('.box-body #' + k + '_error').text("");
+                        jQuery('.box-body #' + k + '_error').text(v);
+                    });
+                }
+            },
+            success: function(respObj) {
+                jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
+                if (respObj.success) {
+                    jQuery(".rulesListHtml").html("");
+                    jQuery(".typeCategoryRulesUpdate").addClass("hide");
+                    jQuery(".categoryRuleList").html(respObj.html);
+                    jQuery("#typesCategoryId").trigger("change");
+                }
+            },
+        });
+        return false;
+    });
 });
 /**
  * [myShow description]

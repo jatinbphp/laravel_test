@@ -74,8 +74,12 @@
 	<div class="col-sm-2 typeCategoryRulesSave hide">
 		<button type="submit" class="btn btn-success btnTypeCategoryRulesSave "> <i class="fa fa-optin-monster" aria-hidden="true"></i> Save</button>
 	</div>
-</div>
 
+	<div class="col-sm-2 typeCategoryRulesUpdate hide">
+		<button type="submit" class="btn btn-success btnTypeCategoryRulesUpdate "> <i class="fa fa-optin-monster" aria-hidden="true"></i> Update</button>
+	</div>
+</div>
+<input type="hidden" name="rules_update_id" class="ruleUpdateId">
 <div class="form-group required rulesListHtml">
 
 </div>

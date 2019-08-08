@@ -119,3 +119,13 @@ Route::delete('category_rules_delete/delete', [
     'as' => 'category_rules_delete.delete',
     'uses' => 'RulesController@deleteCategoryRulesDelete',
 ]);
+
+Route::post('types_category_rules/update/{rule_id}', [
+    'as' => 'types_category_rules.update',
+    'uses' => 'RulesController@updateTypesCategoryRules',
+]);
+
+Route::post('types_category_rules/get/{rule_id}', [
+    'as' => 'types_category_rules.get',
+    'uses' => 'RulesController@getTypesCategoryRules',
+]);

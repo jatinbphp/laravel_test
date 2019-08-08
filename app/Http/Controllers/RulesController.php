@@ -676,4 +676,78 @@ class RulesController extends Controller
 
         return response()->json($response, 200);
     }
+
+    /**
+     * [getTypesCategoryRules description]
+     * @param  Request $request            [description]
+     * @param  [type]  $typeCategoryRuleId [description]
+     * @return [type]                      [description]
+     */
+    public function getTypesCategoryRules(Request $request, $typeCategoryRuleId)
+    {
+        $rules = TypesCategoryRules::where('id', $typeCategoryRuleId)->first();
+        $response = [
+            'success' => true,
+            'types_category' => $rules,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * [updateTypesCategoryRules description]
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function updateTypesCategoryRules(Request $request, $typeCategoryRuleId)
+    {
+        $data = $request->all();
+
+        $rules = [
+            'country_id' => "required",
+            'type_id' => "required",
+            'type_category_name' => "required",
+            'rules_id' => "required",
+        ];
+
+        $message = [
+            'type_category_name.unique' => 'The types category name must be unique',
+        ];
+
+        $validator = Validator::make($data, $rules, $message);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        TypesCategoryRules::where("id", $typeCategoryRuleId)->update([
+            'country_id' => $request->country_id,
+            'type_id' => $request->type_id,
+            'type_category_id' => $request->type_category_id,
+            'rules_id' => $request->rules_id,
+            "updated_at" => \Carbon\Carbon::now(),
+        ]);
+
+        if (TypesCategoryRules::count() > 0) {
+            $countryList = Country::pluck("name", "id")->all();
+            $typeList = Types::pluck("name", "id")->all();
+            $typeCategoryList = TypesCategory::pluck("name", "id")->all();
+            $rulesList = Rules::pluck("name", "id")->all();
+
+            $typeRules = TypesCategoryRules::all()->toArray();
+            foreach ($typeRules as $key => $typeRule) {
+                $rulesData[$key]['id'] = $typeRule['id'];
+                $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
+                $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
+                $rulesData[$key]['type_category_name'] = isset($typeList[$typeRule['type_category_id']]) ? $typeList[$typeRule['type_category_id']] : "";
+                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
+            }
+        }
+
+        $response = [
+            'success' => true,
+            'html' => view('category.category_rule_list', compact('rulesData'))->render(),
+        ];
+
+        return response()->json($response, 200);
+    }
 }
