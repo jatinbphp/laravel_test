@@ -14,7 +14,7 @@
   	<div class="col-lg-5 col-xs-5">
   		@include("rules.create")
   	</div>
-  	<div class="col-lg-7 col-xs-5 ruleList">
+  	<div class="col-lg-7 col-xs-5">
 		  @include("rules.index")
   	</div>
   </div>

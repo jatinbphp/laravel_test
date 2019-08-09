@@ -80,16 +80,6 @@ jQuery(document).ready(function() {
     
     jQuery(".select2").select2();
     
-    jQuery("#product thead#filters input:text").donetyping(function() {
-        product.fnFilter(this.value, jQuery("#product thead#filters input:text").index(this));
-    });
-    jQuery('#change_category').on('change', function() {
-        product.fnFilter(this.value, jQuery("#product thead#filters input:text").index(this));
-    });
-    jQuery(document).on('click', 'input:checkbox[id="selectall"]', function() {
-        var is_checked = jQuery(this).is(':checked');
-        jQuery(this).closest('table').find('tbody tr td:first-child input[type=checkbox]').attr('checked', is_checked);
-    });
     /* ----------------------------------------------------------------------- */
     //validation for numeric value 
     jQuery(".numeric").keydown(function(e) {
@@ -129,9 +119,7 @@ jQuery(document).ready(function() {
                 myHide();
             },
             success: function(respObj) {
-                $("html, body").animate({
-                    scrollTop: 0
-                }, "slow");
+                jQuery(".clearText").text("");
             },
         });
     });
@@ -171,6 +159,7 @@ jQuery(document).ready(function() {
             jQuery('#confirmDelete .model_click').attr('data-type', type);
             jQuery('#confirmDelete .model_click').addClass('model_click_master');
             jQuery('#confirmDelete').modal('show');
+            jQuery(".clearText").text("");
         }
     });
 
@@ -200,14 +189,20 @@ jQuery(document).ready(function() {
                 jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                 if (respObj.success) {
                     jQuery('#messsage').find("p").addClass('callout callout-success').html(type + " Deleted Successfully .").show().delay(3000).fadeOut('slow');
+                    
                     if(type == 'rules') {
                         jQuery(".ruleList").html(respObj.html);
                     }
 
                     if(type == "category_rules_delete") {
-                        jQuery(".categoryRuleHtmlList").html(respObj.html);   
+                        jQuery("#typesCategoryId").trigger("change");   
+                        jQuery(".categoryRuleHtmlList").html(respObj.html);
                     }
 
+                    if(type == "category_rules") {
+                        jQuery("#typesCategoryId").trigger("change");   
+                        jQuery(".categoryRuleHtmlList").html(respObj.html);
+                    }
                 } else {
                     jQuery('#messsage').find("p").addClass('callout callout-danger').html(respObj.message).show().delay(5000).fadeOut('slow');
                 }
@@ -224,10 +219,6 @@ jQuery(document).ready(function() {
         var deleteId = jQuery(this).attr('data-value');
         var type = jQuery(this).attr('data-type');
         deleteData(type, deleteId);
-
-        if(type == "category_rules") {
-            jQuery("#typesCategoryId").trigger("change");   
-        }
     });
     
     /**
@@ -261,10 +252,9 @@ jQuery(document).ready(function() {
                 jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                 if (respObj.success) {
                     jQuery('#messsage').find("p").addClass('callout callout-success').html("Rules Data Save Successfully").show().delay(3000).fadeOut('slow');
-                    $("html, body").animate({
-                        scrollTop: 0
-                    }, "slow");
-                    jQuery(".ruleList").html(respObj.html);
+                    jQuery(".box-body #name_error").text("");                    
+                    jQuery(".box-body #description_error").text("");                   
+                    jQuery(".ruleHtmlList").html(respObj.html);
                     jQuery("#rules_frm")[0].reset();
                     jQuery('#typesCategoryRulesId').find('option').not(':first').remove();
                     jQuery.each(respObj.ruleList, function(i, item) {
@@ -273,8 +263,6 @@ jQuery(document).ready(function() {
                             text: item
                         }));
                     });
-                    jQuery(".box-body #name_error").text("");                    
-                    jQuery(".box-body #description_error").text("");                    
                 }
             },
         });
@@ -316,6 +304,7 @@ jQuery(document).ready(function() {
                     jQuery(".rulesAction").val("edit");
                     jQuery(".rulesId").val(respObj.rules.id);
                     jQuery(".rulesDescription").val(respObj.rules.description);
+                    jQuery(".clearText").text("");
                 }
             },
         });
@@ -411,6 +400,7 @@ jQuery(document).ready(function() {
                             text: item
                         }));
                     });
+                    jQuery(".clearText").text("");
                 }
             },
         });
@@ -461,6 +451,7 @@ jQuery(document).ready(function() {
                             text: item
                         }));
                     });
+                    jQuery(".clearText").text("");
                 }
             },
         });
@@ -513,6 +504,7 @@ jQuery(document).ready(function() {
                             text: item
                         }));
                     });
+                    jQuery(".clearText").text("");
                 }
             },
         });
@@ -559,9 +551,10 @@ jQuery(document).ready(function() {
                 jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                 if (respObj.success) {
                     jQuery(".rulesListHtml").html("");
-                    jQuery(".typeCategoryRulesSave").addClass("hide");
-                    jQuery(".categoryRuleList").html(respObj.html);
+                    jQuery(".typeCategoryRulesUpdate").addClass("hide");
+                    jQuery(".categoryRuleHtmlList").html(respObj.html);
                     jQuery("#typesCategoryId").trigger("change");
+                    jQuery(".clearText").text("");
                 }
             },
         });
@@ -670,7 +663,9 @@ jQuery(document).ready(function() {
     jQuery(document).on('change',"#typesCategoryRulesId", function() {
         var typesCategoryRulesId = jQuery(this).val();
         var rulesId = jQuery(".ruleUpdateId").val();
-        if (typeId != "" && rulesId =="") {
+        if (typeId != "" && rulesId !="") {
+            jQuery(".typeCategoryRulesUpdate").removeClass("hide");
+        } else if (typeId != "" && rulesId =="") {
             jQuery(".typeCategoryRulesSave").removeClass("hide");
         } else {
             jQuery(".typeCategoryRulesSave").addClass("hide");
@@ -717,6 +712,7 @@ jQuery(document).ready(function() {
                                 text: item
                             }));
                         });
+                        jQuery(".clearText").text("");
                     }
                 },
             });
@@ -768,6 +764,7 @@ jQuery(document).ready(function() {
                         });
                         jQuery(".countryName").val("");
                         jQuery("#countryId").val(countryId);
+                        jQuery(".clearText").text("");
                     }
                 },
             });
@@ -820,6 +817,7 @@ jQuery(document).ready(function() {
                                 text: item
                             }));
                         });
+                        jQuery(".clearText").text("");
                     }
                 },
             });
@@ -873,6 +871,7 @@ jQuery(document).ready(function() {
                         });
                         jQuery(".typeName").val("");
                         jQuery("#typeId").val(typeId);
+                        jQuery(".clearText").text("");
                     }
                 },
             });
@@ -927,6 +926,7 @@ jQuery(document).ready(function() {
                                 text: item
                             }));
                         });
+                        jQuery(".clearText").text("");
                     }
                 },
             });
@@ -983,6 +983,7 @@ jQuery(document).ready(function() {
                         });
                         jQuery(".typeCategoryName").val("");
                         jQuery("#typesCategoryId").val(typesCategoryId);
+                        jQuery(".clearText").text("");
                     }
                 },
             });
@@ -1027,18 +1028,18 @@ jQuery(document).ready(function() {
                     if (respObj.success) {
                         jQuery(".ruleUpdateId").val(respObj.rules.id);
                         jQuery("#countryId").val(respObj.rules.country_id).trigger("change");
-                        jQuery("#typeId").val(respObj.rules.type_id).trigger("change");
-                        jQuery("#typeCategoryId").val(respObj.rules.type_category_id).trigger("change");
-                        jQuery("#typesCategoryRulesId").val(respObj.rules.rules_id);
-                        jQuery("typeId").val(respObj.rules.type_id);
-                        jQuery("typesCategoryRulesId").val(respObj.rules.type_category_id);
-                        jQuery(".typeCategoryRulesUpdate").removeClass("hide");
-                        jQuery(".typeCategoryRulesSave").addClass("hide");
+                        jQuery(".clearText").text("");
+                        //jQuery("#typeId").val(respObj.rules.type_id).trigger("change");
+                        //jQuery("#typeCategoryId").val(respObj.rules.type_category_id).trigger("change");
+                        //jQuery("#typesCategoryRulesId").val(respObj.rules.rules_id);
+                        //jQuery("typeId").val(respObj.rules.type_id);
+                        //jQuery("typesCategoryRulesId").val(respObj.rules.type_category_id);
+                        //jQuery(".typeCategoryRulesUpdate").removeClass("hide");
+                        //jQuery(".typeCategoryRulesSave").addClass("hide");
                     }
                 },
             });
             jQuery(".typeCategorySave,.typeCategoryUpdate,.typeCategoryDelete").addClass("hide");
-            jQuery(".typeCategoryDelete").removeClass("hide");
         }
         return false;
     });
@@ -1087,6 +1088,7 @@ jQuery(document).ready(function() {
                     jQuery(".typeCategoryRulesUpdate").addClass("hide");
                     jQuery(".categoryRuleHtmlList").html(respObj.html);
                     jQuery("#typesCategoryId").trigger("change");
+                    jQuery(".clearText").text("");
                 }
             },
         });

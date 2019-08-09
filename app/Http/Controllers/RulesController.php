@@ -110,6 +110,7 @@ class RulesController extends Controller
     public function saveRules(Request $request)
     {
         $data = $request->all();
+
         if ($request->action == 'new') {
             $rules = [
                 'name' => "required|unique:rules,name",
@@ -139,7 +140,7 @@ class RulesController extends Controller
                 "created_at" => \Carbon\Carbon::now(),
                 "updated_at" => \Carbon\Carbon::now(),
             ]);
-        } else if ($request->action == 'new') {
+        } else if ($request->action == 'edit') {
             Rules::where("id", $request->id)->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -147,9 +148,11 @@ class RulesController extends Controller
             ]);
         }
 
+        $rules = Rules::all();
+
         $response = [
             'success' => true,
-            'html' => $this->getRules(),
+            'html' => view('rules.rule_list', compact('rules'))->render(),
             'ruleList' => Rules::pluck("name", "id")->all(),
         ];
 
@@ -470,11 +473,11 @@ class RulesController extends Controller
             'country_id' => "required",
             'type_id' => "required",
             'type_category_id' => "required",
-            'rules_id' => "required",
+            'rules_id' => "required|unique:types_category_rules,rules_id,null,null,type_category_id," . $data['type_category_id'],
         ];
 
         $message = [
-
+            'rules_id.unique' => 'This rules in already in use with this category',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -491,25 +494,11 @@ class RulesController extends Controller
             "updated_at" => \Carbon\Carbon::now(),
         ]);
 
-        if (TypesCategoryRules::count() > 0) {
-            $countryList = Country::pluck("name", "id")->all();
-            $typeList = Types::pluck("name", "id")->all();
-            $typeCategoryList = TypesCategory::pluck("name", "id")->all();
-            $rulesList = Rules::pluck("name", "id")->all();
-
-            $typeRules = TypesCategoryRules::all()->toArray();
-            foreach ($typeRules as $key => $typeRule) {
-                $rulesData[$key]['id'] = $typeRule['id'];
-                $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
-                $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
-                $rulesData[$key]['type_category_name'] = isset($typeList[$typeRule['type_category_id']]) ? $typeList[$typeRule['type_category_id']] : "";
-                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
-            }
-        }
+        $html = $this->getCurrentRules();
 
         $response = [
             'success' => true,
-            'types_category_rules' => view('category.category_rule_list', compact('rulesData'))->render(),
+            'html' => $html,
         ];
 
         return response()->json($response, 200);
@@ -612,9 +601,11 @@ class RulesController extends Controller
 
         TypesCategoryRules::whereIn('id', $ids)->delete();
 
+        $html = $this->getCurrentRules();
+
         $response = [
             'success' => true,
-            'html' => $this->getRules(),
+            'html' => $html,
         ];
 
         return response()->json($response, 200);
@@ -651,8 +642,11 @@ class RulesController extends Controller
 
         TypesCategoryRules::whereIn('id', $ids)->delete();
 
+        $html = $this->getCurrentRules();
+
         $response = [
             'success' => true,
+            'html' => $html,
         ];
 
         return response()->json($response, 200);
@@ -673,28 +667,11 @@ class RulesController extends Controller
 
         TypesCategoryRules::whereIn('id', $ids)->delete();
 
-        $rulesData = [];
-        $rec = 0;
-
-        if (TypesCategoryRules::count() > 0) {
-            $countryList = Country::pluck("name", "id")->all();
-            $typeList = Types::pluck("name", "id")->all();
-            $typeCategoryList = TypesCategory::pluck("name", "id")->all();
-            $rulesList = Rules::pluck("name", "id")->all();
-
-            $typeRules = TypesCategoryRules::all()->toArray();
-            foreach ($typeRules as $key => $typeRule) {
-                $rulesData[$key]['id'] = $typeRule['id'];
-                $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
-                $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
-                $rulesData[$key]['type_category_name'] = isset($typeList[$typeRule['type_category_id']]) ? $typeList[$typeRule['type_category_id']] : "";
-                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
-            }
-        }
+        $html = $this->getCurrentRules();
 
         $response = [
             'success' => true,
-            'html' => view('category.category_rule_list', compact('rulesData'))->render(),
+            'html' => $html,
         ];
 
         return response()->json($response, 200);
@@ -713,11 +690,11 @@ class RulesController extends Controller
             'country_id' => "required",
             'type_id' => "required",
             'type_category_id' => "required",
-            'rules_id' => "required",
+            'rules_id' => "required|unique:types_category_rules,rules_id,$typeCategoryRuleId,id,type_category_id," . $data['type_category_id'],
         ];
 
         $message = [
-            'type_category_id.unique' => 'The types category name must be unique',
+            'rules_id.unique' => 'This rules in already in use with this category',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -733,6 +710,23 @@ class RulesController extends Controller
             "updated_at" => \Carbon\Carbon::now(),
         ]);
 
+        $html = $this->getCurrentRules();
+
+        $response = [
+            'success' => true,
+            'html' => $html,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * [getCurrentRules description]
+     * @return [type] [description]
+     */
+    public function getCurrentRules()
+    {
+        $html = null;
         if (TypesCategoryRules::count() > 0) {
             $countryList = Country::pluck("name", "id")->all();
             $typeList = Types::pluck("name", "id")->all();
@@ -745,15 +739,12 @@ class RulesController extends Controller
                 $rulesData[$key]['country_name'] = isset($countryList[$typeRule['country_id']]) ? $countryList[$typeRule['country_id']] : "";
                 $rulesData[$key]['type_name'] = isset($typeList[$typeRule['type_id']]) ? $typeList[$typeRule['type_id']] : "";
                 $rulesData[$key]['type_category_name'] = isset($typeList[$typeRule['type_category_id']]) ? $typeList[$typeRule['type_category_id']] : "";
-                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ?: "";
+                $rulesData[$key]['rules_name'] = isset($rulesList[$typeRule['rules_id']]) ? $rulesList[$typeRule['rules_id']] : "";
             }
+
+            return view('category.category_rule_list', compact('rulesData'))->render();
         }
 
-        $response = [
-            'success' => true,
-            'html' => view('category.category_rule_list', compact('rulesData'))->render(),
-        ];
-
-        return response()->json($response, 200);
+        return $html;
     }
 }
