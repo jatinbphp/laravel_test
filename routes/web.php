@@ -40,7 +40,7 @@ Route::post('country/update/{country_id}', [
     'uses' => 'RulesController@updateCountry',
 ]);
 
-Route::post('country/delete/{country_id}', [
+Route::post('country/delete', [
     'as' => 'country.delete',
     'uses' => 'RulesController@deleteCountry',
 ]);
@@ -55,7 +55,7 @@ Route::post('types/update/{types_id}', [
     'uses' => 'RulesController@updateTypes',
 ]);
 
-Route::post('types/delete/{types_id}', [
+Route::post('types/delete', [
     'as' => 'types.delete',
     'uses' => 'RulesController@deleteTypes',
 ]);
@@ -70,7 +70,7 @@ Route::post('types_category/update/{types_category_id}', [
     'uses' => 'RulesController@updateTypesCategory',
 ]);
 
-Route::post('types_category/delete/{types_category_id}', [
+Route::post('types_category/delete', [
     'as' => 'types_category.delete',
     'uses' => 'RulesController@deleteTypesCategory',
 ]);

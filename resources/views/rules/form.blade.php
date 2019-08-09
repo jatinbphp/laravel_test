@@ -1,8 +1,8 @@
 <div class="form-group required">
 	<label class="col-sm-3 control-label">Name :-</label>
 	<div class="col-sm-7">
-		{!! Form::text('name',Input::old('name'),array('class'=>'form-control rulesName','placeholder'=>'Rules Name')) !!}
-		<span class="help-inline text-danger clearText" id="name_error"></span>
+		{!! Form::text('rule_name',Input::old('rule_name'),array('class'=>'form-control rulesName','placeholder'=>'Rules Name')) !!}
+		<span class="help-inline text-danger clearText" id="rule_name_error"></span>
 	</div>
 </div>
 

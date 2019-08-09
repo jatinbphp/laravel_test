@@ -25,46 +25,6 @@ class RulesController extends Controller
     }
 
     /**
-     * [store description]
-     * @param  Request $request [description]
-     * @return [type]           [description]
-     */
-    public function store(Request $request)
-    {
-        $data = $request->all();
-
-        $rules = [
-            'name' => "required|unique:rules,name",
-            'description' => "required",
-        ];
-        $message = [
-            'name.unique' => 'The rule name must be unique',
-        ];
-        $validator = Validator::make($data, $rules, $message);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
-
-        if ($request->action == 'new') {
-            Rules::insert([
-                'name' => $request->name,
-                'description' => $request->description,
-                "created_at" => \Carbon\Carbon::now(),
-                "updated_at" => \Carbon\Carbon::now(),
-            ]);
-        } else if ($request->action == 'new') {
-            Rules::where("id", $request->id)->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                "updated_at" => \Carbon\Carbon::now(),
-            ]);
-        }
-
-        return back()->with('message_type', 'success')
-            ->with('message', 'Rules Store Successfully');
-    }
-
-    /**
      * [getRuleById description]
      * @param  [type] $id [description]
      * @return [type]     [description]
@@ -94,9 +54,13 @@ class RulesController extends Controller
         }
 
         Rules::whereIn('id', $ids)->delete();
+
+        $rules = Rules::all();
+
         $response = [
             'success' => true,
-            'html' => $this->getRules(),
+            'html' => view('rules.rule_list', compact('rules'))->render(),
+            'ruleList' => Rules::pluck("name", "id")->all(),
         ];
 
         return response()->json($response, 200);
@@ -113,19 +77,19 @@ class RulesController extends Controller
 
         if ($request->action == 'new') {
             $rules = [
-                'name' => "required|unique:rules,name",
+                'rule_name' => "required|unique:rules,name",
                 'description' => "required",
             ];
         } else {
             $id = $data['id'];
             $rules = [
-                'name' => "required|unique:rules,name,$id",
+                'rule_name' => "required|unique:rules,name,$id",
                 'description' => "required",
             ];
         }
 
         $message = [
-            'name.unique' => 'The rule name must be unique',
+            'rule_name.unique' => 'The rule name must be unique',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -135,14 +99,14 @@ class RulesController extends Controller
 
         if ($request->action == 'new') {
             Rules::insert([
-                'name' => $request->name,
+                'name' => $request->rule_name,
                 'description' => $request->description,
                 "created_at" => \Carbon\Carbon::now(),
                 "updated_at" => \Carbon\Carbon::now(),
             ]);
         } else if ($request->action == 'edit') {
             Rules::where("id", $request->id)->update([
-                'name' => $request->name,
+                'name' => $request->rule_name,
                 'description' => $request->description,
                 "updated_at" => \Carbon\Carbon::now(),
             ]);
@@ -244,6 +208,7 @@ class RulesController extends Controller
     public function deleteCountry(Request $request)
     {
         $ids = $request->id;
+
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -269,11 +234,11 @@ class RulesController extends Controller
 
         $rules = [
             'country_id' => "required",
-            'name' => "required|unique:types,name,NULL,NULL,country_id," . $data['country_id'],
+            'type_name' => "required|unique:types,name,NULL,NULL,country_id," . $data['country_id'],
         ];
 
         $message = [
-            'name.unique' => 'The types name must be unique',
+            'type_name.unique' => 'This type is already exist with this country',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -284,7 +249,7 @@ class RulesController extends Controller
 
         Types::insert([
             'country_id' => $request->country_id,
-            'name' => $request->name,
+            'name' => $request->type_name,
             "created_at" => \Carbon\Carbon::now(),
             "updated_at" => \Carbon\Carbon::now(),
         ]);
@@ -312,7 +277,7 @@ class RulesController extends Controller
         ];
 
         $message = [
-            'type_name.unique' => 'The types name must be unique',
+            'type_name.unique' => 'This type is already exist with this country.',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -321,6 +286,7 @@ class RulesController extends Controller
         }
 
         Types::where("id", $typeId)->update([
+            'country_id' => $request->country_id,
             'name' => $request->type_name,
             "updated_at" => \Carbon\Carbon::now(),
         ]);
@@ -369,11 +335,11 @@ class RulesController extends Controller
         $rules = [
             'country_id' => "required",
             'type_id' => "required",
-            'name' => "required|unique:types_category,name,NULL,NULL,type_id," . $data['type_id'],
+            'types_category_name' => "required|unique:types_category,name,NULL,NULL,type_id," . $data['type_id'],
         ];
 
         $message = [
-            'name.unique' => 'The types name must be unique',
+            'types_category_name.unique' => 'This category is already exist with this type',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -384,7 +350,7 @@ class RulesController extends Controller
         TypesCategory::insert([
             'country_id' => $request->country_id,
             'type_id' => $request->type_id,
-            'name' => $request->name,
+            'name' => $request->types_category_name,
             "created_at" => \Carbon\Carbon::now(),
             "updated_at" => \Carbon\Carbon::now(),
         ]);
@@ -409,11 +375,12 @@ class RulesController extends Controller
         $rules = [
             'country_id' => "required",
             'type_id' => "required",
-            'type_category_name' => "required|unique:types_category,name,id,$typeId,country_id," . $data['country_id'],
+            'types_category_name' => "required|unique:types_category,name,id,typeCategoryId,type_category_id," . $data['type_category_id'],
+            'types_category_name' => "required|unique:types_category,name,id,$typeCategoryId,country_id," . $data['country_id'],
         ];
 
         $message = [
-            'type_category_name.unique' => 'The types category name must be unique',
+            'types_category_name.unique' => 'This category is already exist with this type',
         ];
 
         $validator = Validator::make($data, $rules, $message);
@@ -424,7 +391,7 @@ class RulesController extends Controller
         TypesCategory::where("id", $typeCategoryId)->update([
             'country_id' => $request->country_id,
             'type_id' => $request->type_id,
-            'name' => $request->name,
+            'name' => $request->types_category_name,
             "updated_at" => \Carbon\Carbon::now(),
         ]);
 

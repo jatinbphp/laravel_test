@@ -97,32 +97,6 @@ jQuery(document).ready(function() {
             e.preventDefault();
         }
     });
-    
-    /**
-     * 
-     * @param  {[type]} ) {                   deleteId [description]
-     * @return {[type]}   [description]
-     */
-    jQuery(document).on("click", ".btn-rules-delete", function() {
-        deleteId = jQuery(this).data('id');
-        jQuery.ajax({
-            url: public_path +"rules/delete",
-            type: 'delete',
-            dataType: 'json',
-            data: {
-                id: deleteId,
-            },
-            beforeSend: function() {
-                myShow();
-            },
-            complete: function() {
-                myHide();
-            },
-            success: function(respObj) {
-                jQuery(".clearText").text("");
-            },
-        });
-    });
 
     /**
      * 
@@ -191,7 +165,7 @@ jQuery(document).ready(function() {
                     jQuery('#messsage').find("p").addClass('callout callout-success').html(type + " Deleted Successfully .").show().delay(3000).fadeOut('slow');
                     
                     if(type == 'rules') {
-                        jQuery(".ruleList").html(respObj.html);
+                        jQuery(".ruleHtmlList").html(respObj.html);
                     }
 
                     if(type == "category_rules_delete") {
@@ -420,7 +394,7 @@ jQuery(document).ready(function() {
             type: 'post',
             dataType: 'json',
             data: {
-                "name": data,
+                "type_name": data,
                 "country_id":countryId
             },
             beforeSend: function() {
@@ -442,7 +416,7 @@ jQuery(document).ready(function() {
                 jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                 if (respObj.success) {
                     jQuery('#typeId').find('option').not(':first').remove();
-                    jQuery('#messsage').find("p").addClass('callout callout-success').html("Country Type Data Save Successfully").show().delay(3000).fadeOut('slow');
+                    jQuery('#messsage').find("p").addClass('callout callout-success').html("Type Data Save Successfully").show().delay(3000).fadeOut('slow');
                     jQuery(".typeName").val("");
                     jQuery(".typeSave").addClass("hide");
                     jQuery.each(respObj.types, function(i, item) {
@@ -472,7 +446,7 @@ jQuery(document).ready(function() {
             type: 'post',
             dataType: 'json',
             data: {
-                "name": data,
+                "types_category_name": data,
                 "country_id":countryId,
                 "type_id":typeId
             },
@@ -679,10 +653,10 @@ jQuery(document).ready(function() {
      */
     jQuery(document).on("click", ".btnCountryDelete", function(e) {
         var countryId = jQuery("#countryId").val();
-        jQuery('#countryId').find('option').not(':first').remove();
+        
         if (countryId != "") {
             jQuery.ajax({
-                url: public_path +"country/delete/"+countryId,
+                url: public_path +"country/delete",
                 type: 'post',
                 dataType: 'json',
                 data: {
@@ -706,6 +680,7 @@ jQuery(document).ready(function() {
                 success: function(respObj) {
                     jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                     if (respObj.success) {
+                        jQuery('#countryId').find('option').not(':first').remove();
                         jQuery.each(respObj.countries, function(i, item) {
                             jQuery('#countryId').append(jQuery('<option>', {
                                 value: i,
@@ -786,7 +761,7 @@ jQuery(document).ready(function() {
         jQuery('#typeId').find('option').not(':first').remove();
         if (typeId != "") {
             jQuery.ajax({
-                url: public_path +"types/delete/"+typeId,
+                url: public_path +"types/delete",
                 type: 'post',
                 dataType: 'json',
                 data: {
@@ -892,13 +867,13 @@ jQuery(document).ready(function() {
         var countryId = jQuery("#countryId").val();
         var typesCategoryId = jQuery("#typesCategoryId").val();
 
-        jQuery('#typesCategoryId').find('option').not(':first').remove();
         if (typesCategoryId != "") {
             jQuery.ajax({
-                url: public_path +"types_category/delete/"+typesCategoryId,
+                url: public_path +"types_category/delete",
                 type: 'post',
                 dataType: 'json',
                 data: {
+                    "id":typesCategoryId,
                     "type_id":typeId,
                     "country_id":countryId
                 },
@@ -920,6 +895,7 @@ jQuery(document).ready(function() {
                 success: function(respObj) {
                     jQuery('#messsage').find("p").removeClass("callout-danger callout-success");
                     if (respObj.success) {
+                        jQuery('#typesCategoryId').find('option').not(':first').remove();
                         jQuery.each(respObj.types_category, function(i, item) {
                             jQuery('#typesCategoryId').append(jQuery('<option>', {
                                 value: i,
